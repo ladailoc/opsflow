@@ -1,0 +1,88 @@
+erDiagram
+    USERS {
+        uuid id PK
+        text username UK
+        text email UK
+        text display_name
+        text password_hash
+        text role
+        text account_status
+        bigint auth_version
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    REQUEST_TYPES {
+        uuid id PK
+        text name UK
+        text description
+        text status
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    TICKETS {
+        uuid id PK
+        text ticket_code UK
+        uuid requester_id FK
+        uuid assignee_id FK
+        uuid request_type_id FK
+        text title
+        text description
+        text status
+        text impact
+        text urgency
+        text priority
+        bigint version
+        timestamptz created_at
+        timestamptz updated_at
+        timestamptz first_response_at
+        bigint first_response_target_seconds
+        bigint resolution_target_seconds
+        bigint resolution_accumulated_seconds
+        timestamptz resolution_running_since
+        timestamptz latest_resolved_at
+        timestamptz first_response_breached_at
+        timestamptz resolution_breached_at
+    }
+
+    COMMENTS {
+        uuid id PK
+        uuid ticket_id FK
+        uuid author_id FK
+        text visibility
+        text content
+        timestamptz created_at
+    }
+
+    REFRESH_TOKENS {
+        uuid id PK
+        uuid user_id FK
+        text token_hash UK
+        uuid token_family_id
+        uuid replaced_by_token_id FK
+        timestamptz expires_at
+        timestamptz revoked_at
+        timestamptz created_at
+    }
+
+    AUDIT_EVENTS {
+        uuid id PK
+        uuid actor_id FK
+        text entity_type
+        uuid entity_id
+        text action
+        text visibility
+        jsonb before_data
+        jsonb after_data
+        text reason
+        timestamptz created_at
+    }
+
+    USERS ||--o{ TICKETS : requests
+    USERS |o--o{ TICKETS : assigned_to
+    REQUEST_TYPES ||--o{ TICKETS : classifies
+    TICKETS ||--o{ COMMENTS : contains
+    USERS ||--o{ COMMENTS : authors
+    USERS ||--o{ REFRESH_TOKENS : owns
+    USERS ||--o{ AUDIT_EVENTS : acts
