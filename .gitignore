@@ -11,6 +11,7 @@
 
 # Local configuration and credentials
 **/.env*
+!**/.env.example
 **/*.pem
 **/*.key
 
