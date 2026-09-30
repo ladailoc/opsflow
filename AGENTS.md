@@ -29,7 +29,8 @@ Source và config thực tế là bằng chứng cho phần **đã triển khai*
 - Database: PostgreSQL, demo dùng Supabase Managed PostgreSQL qua backend và SSL. PostgreSQL/Supabase version chưa xác minh.
 - Migration: Flyway; chưa có migration hoặc version cấu hình.
 - Deploy mục tiêu: Docker + AWS + Nginx, cùng HTTPS origin; local có thể dùng dev proxy/Compose. Chưa có config triển khai thực tế.
-- Node.js version chưa chốt trong source. Ghi version chính xác khi các task setup tạo config, không điền theo suy đoán.
+- Môi trường local đã kiểm tra ngày 30/09/2026: Node.js **22.23.1**, npm **10.9.8**, Git **2.49.0.windows.1**. `npm ls --depth=0` trong `frontend/` xác nhận package đang cài: Next.js **14.2.15**, React/React DOM **18.3.1**, TypeScript **5.9.3**, Tailwind CSS **3.4.19**. Version đang cài của TypeScript/Tailwind khác mốc tối thiểu trong range `package.json`; không sửa dependency chỉ vì khác mốc này.
+- Java/Javac local **Temurin 21.0.12.1**, Maven local **3.9.11**; Gradle và `psql` không có trên PATH. Docker CLI **29.8.0** có sẵn nhưng Docker daemon chưa chạy lúc kiểm tra. Đây là **toolchain của máy**, không phải version backend đã chốt. Node.js/JDK/Spring Boot/build tool/Flyway/PostgreSQL version cho dự án cần xác nhận trong T0.2 và config thực tế; không điền theo suy đoán hoặc tự nâng cấp frontend.
 
 ## D. Repository structure
 
