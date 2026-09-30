@@ -46,7 +46,7 @@ Backend:
 - Java/JDK: [điền version].
 - Spring Boot: [điền version từ pom.xml].
 - Maven/Gradle: [điền version thực tế].
-- Flyway: [điền version nếu đã cấu hình].
+- Flyway: 12.4.0 (đã xác minh từ Maven dependency tree trong T0.3; Spring Boot 4.1.1 quản lý dependency). Migration hiện có và version kế tiếp ghi tại `docs/architecture/migrations.md`.
 
 Database:
 - PostgreSQL: version do Supabase Project đang sử dụng.

@@ -1,6 +1,6 @@
 # OpsFlow Backend (T0.2 foundation)
 
-Spring Boot REST API foundation for Java 21. Proposed baseline: Spring Boot 4.1.1, Maven 3.9.11 wrapper. PhanDV2 should review this baseline before it is treated as the team's agreed version. No User/Ticket entity, login, business API, or Flyway migration is included yet.
+Spring Boot REST API foundation for Java 21. Proposed baseline: Spring Boot 4.1.1, Maven 3.9.11 wrapper. PhanDV2 should review this baseline before it is treated as the team's agreed version. No User/Ticket entity, login, or business API is included yet. T0.3 adds the first Flyway migration for `users` and `request_types` only.
 
 ## Packages
 
@@ -8,7 +8,7 @@ Spring Boot REST API foundation for Java 21. Proposed baseline: Spring Boot 4.1.
 
 ## Configuration
 
-The application reads `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` from environment variables; `.env.example` is a placeholder reference, **not** automatically loaded by Spring Boot. Never commit a populated `.env` file. `SERVER_PORT` defaults to 8080. `spring.jpa.hibernate.ddl-auto=validate` prevents Hibernate from changing the schema. Flyway is present but disabled until T0.3 provides and reviews the baseline migration. There are no migration scripts in this task.
+The application reads `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` from environment variables; `.env.example` is a placeholder reference, **not** automatically loaded by Spring Boot. Never commit a populated `.env` file. `SERVER_PORT` defaults to 8080. Flyway applies versioned migrations on normal startup before JPA validates the schema. `spring.jpa.hibernate.ddl-auto=validate` prevents Hibernate from changing the schema. See [migration rules and verification](../docs/architecture/migrations.md). Do not run the normal profile against the shared Supabase demo database until the team approves its migration.
 
 For local PostgreSQL, set `DB_URL` to a local JDBC URL such as `jdbc:postgresql://localhost:5432/opsflow?sslmode=disable`. For Supabase, use the PostgreSQL JDBC host, port, database and SSL settings supplied by the project; prefer certificate verification (`sslmode=verify-full`) with the appropriate trust configuration. Set credentials only in your shell/secret manager. The browser and frontend must never connect directly to PostgreSQL.
 
@@ -36,4 +36,4 @@ Invoke-WebRequest http://localhost:8080/api/v1/health
 .\mvnw.cmd clean verify
 ```
 
-The integration test starts a random-port server in `smoke` profile, checks HTTP 204 for health and HTTP 403 for a business route. It does not test PostgreSQL, Flyway, Supabase, or real authentication. A database-connected startup and migration check belong after T0.3 and the availability of approved credentials.
+The integration test starts a random-port server in `smoke` profile, checks HTTP 204 for health and HTTP 403 for a business route. It does not test PostgreSQL, Flyway, Supabase, or real authentication. The T0.3 PostgreSQL migration test and its limits are recorded in [migration rules and verification](../docs/architecture/migrations.md).
