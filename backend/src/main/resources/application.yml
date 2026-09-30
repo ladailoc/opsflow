@@ -14,5 +14,9 @@ spring:
     init:
       mode: never
   flyway:
-    # T0.3 will enable Flyway after the baseline migration is reviewed.
-    enabled: false
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    validate-migration-naming: true
+    validate-on-migrate: true
+    clean-disabled: true

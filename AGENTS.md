@@ -6,7 +6,7 @@ OpsFlow là ứng dụng web quản lý yêu cầu hỗ trợ IT nội bộ cho 
 
 Ngoài MVP: public registration, SSO/HR/email/chat integration, ứng dụng mobile riêng, multi-company, asset management, AI tự xử lý, phê duyệt nhiều cấp, ticket for others/affected-user list, multi-assignee, Pending Vendor, Rejected, xóa ticket và file attachment trong phạm vi bắt buộc. Chỉ đổi scope sau khi PO xác nhận. Xem Requirement Brief mục 1–6, Backlog mục 1.1 và Q&A #4, #8, #9, #13–15, #19.
 
-**Trạng thái source tại ngày 30/09/2026:** `frontend/` là Next.js prototype với route Employee/Agent/Admin, component dùng lại, mock data và reducer/state cục bộ. `frontend/src/prototype/PrototypeProvider.tsx` lưu **prototype state** vào localStorage; đây không phải token hoặc authentication thật. `frontend/src/app/login/page.tsx` dùng mock users. Chưa có REST API client hoặc kết nối backend được xác minh. `backend/` và `nginx/` đang rỗng; chưa thấy Spring Boot project, migration, CI hoặc Docker config. Không đánh dấu bất kỳ task backend/auth/database/SLA nào Done từ prototype. Kiểm tra source và test lại trước khi cập nhật nhận định này.
+**Trạng thái source tại ngày 30/09/2026:** `frontend/` vẫn chứa Next.js prototype với route Employee/Agent/Admin, component dùng lại, mock data và reducer/state cục bộ. `frontend/src/prototype/PrototypeProvider.tsx` lưu **prototype state** vào localStorage; đây không phải token hoặc authentication thật. `frontend/src/app/login/page.tsx` dùng mock users. Chưa có REST API client hoặc kết nối backend được xác minh. `backend/` đã có Spring Boot foundation từ T0.2 và migration V1 từ T0.3 cho `users`/`request_types`; chưa có Auth, Ticket API hoặc SLA Engine. `nginx/` chưa có cấu hình triển khai được xác minh. Không đánh dấu feature tích hợp Done từ prototype hoặc chỉ từ schema. Kiểm tra source và test lại trước khi cập nhật nhận định này.
 
 ## B. Authoritative documents
 
@@ -25,9 +25,9 @@ Source và config thực tế là bằng chứng cho phần **đã triển khai*
 ## C. Technology stack
 
 - Frontend chốt: Next.js + TypeScript. Prototype `frontend/package.json`: Next.js **14.2.15**; React **^18.3.1**, TypeScript **^5.6.3**, Tailwind CSS **^3.4.14**, `lucide-react`, `class-variance-authority`, `clsx`, `tailwind-merge`. Dấu `^` là range trong manifest, không phải version cài thực tế. UI đang có `frontend/src/components/ui/` và `frontend/src/components/tickets/`; dùng lại trước khi thêm thư viện/component.
-- Backend mục tiêu: Java + Spring Boot + Spring Security, REST API; chưa có `pom.xml`/`build.gradle`, nên **chưa xác minh** JDK, Spring Boot, build tool hoặc dependency version. Không tự nâng major version.
+- Backend hiện có: Java 21, Spring Boot 4.1.1, Maven Wrapper 3.9.11 và Spring Security foundation. Xem `backend/pom.xml` cho dependency thực tế; không tự nâng major version.
 - Database: PostgreSQL, demo dùng Supabase Managed PostgreSQL qua backend và SSL. PostgreSQL/Supabase version chưa xác minh.
-- Migration: Flyway; chưa có migration hoặc version cấu hình.
+- Migration: Flyway 12.4.0 theo dependency do Spring Boot 4.1.1 quản lý. T0.3 có `V1__create_users_and_request_types.sql`; xem `docs/architecture/migrations.md` để biết version tiếp theo và quy tắc cấp version.
 - Deploy mục tiêu: Docker + AWS + Nginx, cùng HTTPS origin; local có thể dùng dev proxy/Compose. Chưa có config triển khai thực tế.
 - Môi trường local đã kiểm tra ngày 30/09/2026: Node.js **22.23.1**, npm **10.9.8**, Git **2.49.0.windows.1**. `npm ls --depth=0` trong `frontend/` xác nhận package đang cài: Next.js **14.2.15**, React/React DOM **18.3.1**, TypeScript **5.9.3**, Tailwind CSS **3.4.19**. Version đang cài của TypeScript/Tailwind khác mốc tối thiểu trong range `package.json`; không sửa dependency chỉ vì khác mốc này.
 - Java/Javac local **Temurin 21.0.12.1**, Maven local **3.9.11**; Gradle và `psql` không có trên PATH. Docker CLI **29.8.0** có sẵn nhưng Docker daemon chưa chạy lúc kiểm tra. Đây là **toolchain của máy**, không phải version backend đã chốt. Node.js/JDK/Spring Boot/build tool/Flyway/PostgreSQL version cho dự án cần xác nhận trong T0.2 và config thực tế; không điền theo suy đoán hoặc tự nâng cấp frontend.
@@ -37,7 +37,7 @@ Source và config thực tế là bằng chứng cho phần **đã triển khai*
 | Đường dẫn | Trách nhiệm |
 | --- | --- |
 | `frontend/` | Next.js routes/layout trong `src/app/`; prototype UI và shared component trong `src/components/`; `src/lib/` có logic dùng cho prototype; `src/mocks/` và `src/prototype/` là dữ liệu/trạng thái demo, cần thay bằng API integration theo task. Khi tích hợp, đặt API client/DTO theo convention T0.4 và tái sử dụng UI hiện có. |
-| `backend/` | Chỗ dành cho Spring Boot: config/security/auth, user, request type, ticket, comment, audit, SLA, dashboard, common. Chưa tạo project. Tổ chức theo domain và service/repository; không tạo service/helper trùng chức năng. |
+| `backend/` | Spring Boot foundation: config/security/auth, user, request type, ticket, comment, audit, SLA, dashboard, common; T0.3 thêm Flyway V1 cho `users` và `request_types`. Tổ chức theo domain và service/repository; không tạo service/helper trùng chức năng. |
 | `nginx/` | Reverse proxy `/` tới Next.js và `/api/*` tới Spring Boot tại demo; hiện rỗng. |
 | `docs/` | Nguồn yêu cầu hiện tại; sau này lưu API contract, quyết định nghiệp vụ và hướng dẫn demo/deploy. |
 | `.github/workflows/` | CI cho build/test/deploy **nếu T0.5 áp dụng**; hiện chưa có. |
@@ -70,7 +70,7 @@ Access/Refresh Token qua **HttpOnly Cookie**, **SameSite=Lax**; local HTTP `Secu
 
 ## G. Database & migration rules
 
-Flyway quản lý mọi schema change. Xem migration hiện có trước khi thêm version; không sửa migration đã chạy, không trùng version, không dùng Hibernate tự sửa schema thay Flyway, không chạy destructive migration trên DB chung, không đưa credentials vào Git. T0.1 chốt ERD/data contract trước T0.3 baseline và T3.1 Ticket schema; hiện **chưa có migration**.
+Flyway quản lý mọi schema change. Xem migration hiện có trước khi thêm version; không sửa migration đã chạy, không trùng version, không dùng Hibernate tự sửa schema thay Flyway, không chạy destructive migration trên DB chung, không đưa credentials vào Git. T0.3 tạo V1 cho `users` và `request_types`; version tiếp theo là V2 chưa phân cho task nào. Xem `docs/architecture/migrations.md` trước khi thêm migration cho T1.2, T3.1 hoặc T8.1.
 
 Mô hình sơ bộ (đề xuất kỹ thuật mục 5): `users` với `auth_version`, `refresh_tokens` chỉ chứa token hash/family/revoke metadata, `tickets` với `version` và các mốc/accumulator SLA, `request_types`, `comments` PUBLIC/INTERNAL, `audit_events` đa hình (`entity_type`, `entity_id`, `actor_id`, `action`, `before_data`, `after_data`, `reason`, `created_at`). Ticket History lấy từ audit events loại TICKET; event quản trị dùng chung bảng. Schema/index/constraint cụ thể là hợp đồng của T0.1/T0.3, không tự khóa ở file này.
 
@@ -80,7 +80,7 @@ REST prefix **`/api/v1`**, JSON response/error thống nhất do **T0.4** chốt
 
 ## I. Git & parallel development
 
-`master` = milestone ổn định; `dev` = tích hợp; `feature/<task-id>-<short-name>` và `fix/<task-id>-<short-name>` tạo từ `dev` đã đồng bộ. Mỗi task/commit/PR gắn Task ID; PR nêu scope, test, ảnh UI/API nếu cần; người còn lại review. Không commit trực tiếp lên master/dev sau bootstrap, không tự merge, không force push/reset branch dùng chung, không sửa ngoài scope task nếu chưa thống nhất. Với nhiều agent, mỗi agent dùng worktree/clone/workspace riêng, **không cùng working directory**. Kiểm tra branch, status, remote trước mọi task; hiện repo được bootstrap cục bộ, chưa có remote.
+`master` = milestone ổn định; `dev` = tích hợp; `feature/<task-id>-<short-name>` và `fix/<task-id>-<short-name>` tạo từ `dev` đã đồng bộ. Mỗi task/commit/PR gắn Task ID; PR nêu scope, test, ảnh UI/API nếu cần; người còn lại review. Không commit trực tiếp lên master/dev sau bootstrap, không tự merge, không force push/reset branch dùng chung, không sửa ngoài scope task nếu chưa thống nhất. Với nhiều agent, mỗi agent dùng worktree/clone/workspace riêng, **không cùng working directory**. Kiểm tra branch, status, remote trước mọi task; `origin` đã được cấu hình, nhưng URL/quyền vẫn phải kiểm tra từ Git thực tế.
 
 ## J. Cross-agent contracts
 
